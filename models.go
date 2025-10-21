@@ -15,17 +15,17 @@ type Field struct {
 }
 
 type TableFied struct {
-	SQlCaseCOLUMNNAME string
-	SQlCOLUMNNAME     string
-	SQLCOLUMNTYPE     string
-	SQLDATATYPE       string
-	SQLCOLUMNKEY      string
-	SQLISNULLABLE     string
-	SQLCOLUMNCOMMENT  string
-	SQLCOLUMNDEFAULT  string
-	Num               int
-	StructName        string
-	StructType        string
+	SQlCOLUMNNAMEFMT string
+	SQlCOLUMNNAME    string
+	SQLCOLUMNTYPE    string
+	SQLDATATYPE      string
+	SQLCOLUMNKEY     string
+	SQLISNULLABLE    string
+	SQLCOLUMNCOMMENT string
+	SQLCOLUMNDEFAULT string
+	Num              int
+	StructName       string
+	StructType       string
 }
 
 type DDLFied struct {

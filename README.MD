@@ -18,6 +18,7 @@ config:
   package: models #输出包名称
   format: crlf #格式化字符，默认lf(linux)，windows默认是crlf
   notname: false #用于模板判断是否需要生成tablename
+  camelcase: false #是否生成驼峰命名json
 db:
   db_name: api #db名称
   db_tables: [] #表选择

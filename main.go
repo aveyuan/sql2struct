@@ -33,6 +33,7 @@ var Format string
 var NotName bool
 var SQLDir string
 var RunFlag string
+var CamelCase bool
 
 func init() {
 	flag.StringVar(&RunFlag, "t", "sql2struct", "sql2struct 生成模型 init 输出配置文件 template 输出模板配置文件")
@@ -42,7 +43,7 @@ func init() {
 func main() {
 
 	if RunFlag == "sql2struct" {
-		Run(DBName)
+		Run()
 		log.Println("generate struct success")
 	}
 
@@ -65,18 +66,18 @@ func InitConfig() {
   package: models #输出包名称
   format: crlf #格式化字符，默认lf(linux)，windows默认是crlf
   notname: false #用于模板判断是否需要生成tablename
+  camelcase: false #是否生成驼峰命名json
 db:
   db_name: api #db名称
   db_tables: [] #表选择
-  dsn: root:123456@tcp(127.0.0.1:3306)/api?charset=utf8mb4&parseTime=true  #数据库连接	
-	`), 0644)
+  dsn: root:123456@tcp(127.0.0.1:3306)/?charset=utf8mb4&parseTime=true  #数据库连接`), 0644)
 }
 
 func GenarateTemplate() {
 	os.WriteFile("struct.tpl", []byte(TplStruct), 0644)
 }
 
-func Run(dbName string) {
+func Run() {
 
 	viper.SetConfigFile("config.yml")
 	err := viper.ReadInConfig()
@@ -98,6 +99,7 @@ func Run(dbName string) {
 	Tables = viper.GetStringSlice("db.db_tables")
 	ExTables = viper.GetStringSlice("db.db_extables")
 	NotName = viper.GetBool("config.notname")
+	CamelCase = viper.GetBool("config.camelcase")
 	SQLDir = viper.GetString("sql.out_dir")
 
 	db, err := Connect("mysql", Dsn)
@@ -106,7 +108,7 @@ func Run(dbName string) {
 	}
 	DB = db
 
-	all := GetTables(dbName)
+	all := GetTables(DBName)
 
 	if len(Tables) > 0 {
 		var b []string
@@ -131,7 +133,7 @@ func Run(dbName string) {
 		one.StructName = UderscoreToUpperCamelCase(v) //首字母大写
 		one.TableName = v
 		one.NotName = NotName
-		all := GetStruct(v, dbName)
+		all := GetStruct(v, DBName)
 		for k, v2 := range all {
 			all[k].StructType = TypeMToStruct(func() string {
 				// 对无符号进行判别
@@ -141,7 +143,12 @@ func Run(dbName string) {
 				return v2.SQLDATATYPE
 			}())
 			all[k].StructName = UderscoreToUpperCamelCase(v2.SQlCOLUMNNAME)
-			all[k].SQlCaseCOLUMNNAME = ToLowUpperCamelCase(v2.SQlCOLUMNNAME)
+			if CamelCase {
+				all[k].SQlCOLUMNNAMEFMT = ToLowUpperCamelCase(v2.SQlCOLUMNNAME)
+			} else {
+				all[k].SQlCOLUMNNAMEFMT = all[k].SQlCOLUMNNAME
+			}
+
 			// 判断是否有time
 			if strings.Contains(all[k].StructType, "time.Time") {
 				one.ImportTime = true
