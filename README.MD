@@ -1,7 +1,7 @@
 ## SQL To Struct 数据库到Golang Struct转换工具
 
 ## 使用方式
-1. 下载包然后执行 `go install github.com/aveyuan/sql2struct`
+1. 下载包然后执行 `go install github.com/aveyuan/sql2struct@latest`
 2. 在项目文件下，执行 `sql2struct`
 
 ## 配置文件
